@@ -31,7 +31,7 @@ public class SnippetsActivator implements BundleActivator {
 	public void start(BundleContext bundleContext) throws Exception {
 		instance = this;
 		SnippetsActivator.context = bundleContext;
-		String path = "/Users/joaoduarte/git/pa-iscde-jdsfa1/pt.iscte.pidesco.snippets/snippets";
+		String path = "/Users/joaoduarte/Descargas/pa-iscde-jdsfa1/pt.iscte.pidesco.snippets/snippets";
 		this.fileScanner = new SnippetsFileReaderWriter(path);
 		
 		ServiceReference<JavaEditorServices> ref = bundleContext.getServiceReference(JavaEditorServices.class);
