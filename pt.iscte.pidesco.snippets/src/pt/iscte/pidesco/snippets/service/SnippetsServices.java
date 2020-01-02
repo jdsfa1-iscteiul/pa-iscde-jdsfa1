@@ -6,7 +6,7 @@ import pt.iscte.pidesco.snippets.model.Snippet;
 
 public interface SnippetsServices {
 	/**
-	 * 
+	 * Returns true if a snippet with the specified name exists. Else returns false;
 	 * @param snippetName
 	 * @return
 	 * @throws ClassNotFoundException
@@ -16,7 +16,7 @@ public interface SnippetsServices {
 	boolean isSnippet(String snippetName) throws ClassNotFoundException, IOException ;
 	
 	/**
-	 * 
+	 * Add a new snippet to the 'database'
 	 * @param snippet
 	 * @return
 	 * @throws IOException
@@ -26,7 +26,7 @@ public interface SnippetsServices {
 	ServiceOperationResult saveNewSnippet(Snippet snippet) throws IOException, ClassNotFoundException;
 	
 	/**
-	 * 
+	 * Inserts a snippet at the cursor location
 	 * @param snippet
 	 * @return
 	 */
@@ -34,7 +34,7 @@ public interface SnippetsServices {
 	ServiceOperationResult insertSnippetAtCursor(Snippet snippet);
 	
 	/**
-	 * 
+	 * Inserts a snippet at the cursor location by name
 	 * @param snippetName
 	 * @return
 	 * @throws ClassNotFoundException
