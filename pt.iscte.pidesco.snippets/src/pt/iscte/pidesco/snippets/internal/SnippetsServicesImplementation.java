@@ -26,42 +26,54 @@ public class SnippetsServicesImplementation implements SnippetsServices {
 		}
 		return true;
 	}
+	
+	@Override 
+	public ServiceOperationResult<ArrayList<Snippet>> getSnippetsStartingWith(String startingChars) throws ClassNotFoundException, IOException {
+		ArrayList<Snippet> snippetsMatching = new ArrayList<Snippet>();
+		ArrayList<Snippet> snippetsAvailable = SnippetsActivator.getInstance().getSnippets();
+		for(Snippet snippet: snippetsAvailable) {
+			if(snippet.getName().startsWith(startingChars)) {
+				snippetsMatching.add(snippet);
+			}
+		}
+		return ServiceOperationResult.Success(snippetsMatching);
+	}
 
 	@Override
-	public ServiceOperationResult saveNewSnippet(SnippetType snippetType, String snippetName, String snippetContent) throws IOException, ClassNotFoundException {
+	public ServiceOperationResult<Boolean> saveNewSnippet(SnippetType snippetType, String snippetName, String snippetContent) throws IOException, ClassNotFoundException {
 		Snippet snippet = new Snippet(snippetType, snippetName, snippetContent);
 		if(isSnippet(snippet.getName())) {
 			return ServiceOperationResult.Failure("A snippet with that name already exists");
 		}
 		if(snippetsFileManage != null) {
 			this.snippetsFileManage.writeSnippetInFile(snippet);
-			return ServiceOperationResult.Success();
+			return ServiceOperationResult.Success(true);
 		}
 		return ServiceOperationResult.Failure("Ups! Something went wrong");
 	}
 	
 	@Override
-	public ServiceOperationResult deleteSnippetByName(String snippetName){
+	public ServiceOperationResult<Boolean> deleteSnippetByName(String snippetName){
 		boolean isSuccess = this.snippetsFileManage.deleteSnippetByName(snippetName);
 		if(isSuccess) {
-			return ServiceOperationResult.Success();
+			return ServiceOperationResult.Success(true);
 		} else {
 			return ServiceOperationResult.Failure("We can't delete this file");
 		}
 		
 	}
 
-	private ServiceOperationResult insertSnippetAtCursor(Snippet snippet) {
+	private ServiceOperationResult<Snippet> insertSnippetAtCursor(Snippet snippet) {
 		JavaEditorServices javaEditorServ = SnippetsActivator.getInstance().getJavaEditorServices();
 		if(javaEditorServ != null) {
 			javaEditorServ.insertTextAtCursor(snippet.getContent());
-			return ServiceOperationResult.Success();
+			return ServiceOperationResult.Success(snippet);
 		}
 		return ServiceOperationResult.Failure("Ups! Something went wrong");
 	}
 
 	@Override
-	public ServiceOperationResult insertSnippetAtCursorByName(String snippetName) throws ClassNotFoundException, IOException {
+	public ServiceOperationResult<Snippet> insertSnippetAtCursorByName(String snippetName) throws ClassNotFoundException, IOException {
 		if(isSnippet(snippetName)) {
 			Snippet snippet = getSnippetByName(snippetName);
 			return insertSnippetAtCursor(snippet);

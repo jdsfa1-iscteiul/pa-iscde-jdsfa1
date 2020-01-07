@@ -1,22 +1,24 @@
 package pt.iscte.pidesco.snippets.service;
 
-public class ServiceOperationResult
+public class ServiceOperationResult<T>
 {
     public boolean isSuccess;
+    public T objectResult;
     public String errorMessage;
 
-    public ServiceOperationResult(boolean isSuccess, String errorMessage) {
+    public ServiceOperationResult(boolean isSuccess, T objectResult, String errorMessage) {
 		this.isSuccess = isSuccess;
+		this.objectResult = objectResult;
 		this.errorMessage = errorMessage;
 	}
 	
-	public static ServiceOperationResult Success()
+	public static <T> ServiceOperationResult<T> Success(T objectResult)
     {
-        return new ServiceOperationResult(true, null);
+        return new ServiceOperationResult<T>(true, objectResult, null);
     }
 
-    public static ServiceOperationResult Failure(String errors)
+    public static <T> ServiceOperationResult<T> Failure(String errors)
     {
-    	return new ServiceOperationResult(false, errors);
+    	return new ServiceOperationResult<T>(false, null, errors);
     }
 }
