@@ -26,6 +26,15 @@ public interface SnippetsServices {
 	ServiceOperationResult saveNewSnippet(Snippet snippet) throws IOException, ClassNotFoundException;
 	
 	/**
+	 * Deletes an existing snippet
+	 * @param snippet
+	 * @return
+	 * @throws IOException
+	 * @throws ClassNotFoundException
+	 */
+	ServiceOperationResult deleteSnippetByName(String snippetName);
+	
+	/**
 	 * Inserts a snippet at the cursor location
 	 * @param snippet
 	 * @return

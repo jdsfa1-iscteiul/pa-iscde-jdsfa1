@@ -10,10 +10,10 @@ import java.util.ArrayList;
 
 import pt.iscte.pidesco.snippets.model.Snippet;
 
-public class SnippetsFileReaderWriter {
+public class SnippetsFileManager {
 	private String path;
 	
-	public SnippetsFileReaderWriter(String path) {
+	public SnippetsFileManager(String path) {
 		this.path = path;
 	}
 	
@@ -46,6 +46,11 @@ public class SnippetsFileReaderWriter {
 			o.close();
 			f.close();
 		}
+	}
+	
+	public boolean deleteSnippetByName(String name) {
+		File file = new File(path+"/"+name+".ser");
+		return file.delete();
 	}
 
 }

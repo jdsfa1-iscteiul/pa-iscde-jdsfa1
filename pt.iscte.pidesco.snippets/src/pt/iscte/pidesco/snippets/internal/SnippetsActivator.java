@@ -18,7 +18,7 @@ public class SnippetsActivator implements BundleActivator {
 
 	private static SnippetsActivator instance;
 	private static BundleContext context;
-	private SnippetsFileReaderWriter fileScanner;
+	private SnippetsFileManager snippetsFileManager;
 	private ArrayList<Snippet> snippetsList;
 	private SnippetGroup root;
 	private JavaEditorServices javaEditorServices;
@@ -32,7 +32,7 @@ public class SnippetsActivator implements BundleActivator {
 		instance = this;
 		SnippetsActivator.context = bundleContext;
 		String path = "/Users/joaoduarte/Documents/ISCTE/PA/git/pt.iscte.pidesco.snippets/pt.iscte.pidesco.snippets/snippets";
-		this.fileScanner = new SnippetsFileReaderWriter(path);
+		this.snippetsFileManager = new SnippetsFileManager(path);
 		
 		ServiceReference<JavaEditorServices> ref = bundleContext.getServiceReference(JavaEditorServices.class);
 		if(ref != null) {
@@ -47,7 +47,7 @@ public class SnippetsActivator implements BundleActivator {
 	}
 
 	private void readSnippetsFile() throws ClassNotFoundException, IOException {
-		this.snippetsList = fileScanner.readSnippetsFromDir();
+		this.snippetsList = snippetsFileManager.readSnippetsFromDir();
 		organizeSnippetsByType();
 	}
 	
@@ -95,8 +95,8 @@ public class SnippetsActivator implements BundleActivator {
 		return this.snippetsList;
 	}
 	
-	public SnippetsFileReaderWriter getFileReaderWriter() {
-		return this.fileScanner;
+	public SnippetsFileManager getFileManager() {
+		return this.snippetsFileManager;
 	}
 
 	public JavaEditorServices getJavaEditorServices() {

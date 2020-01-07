@@ -5,8 +5,10 @@ import java.util.Map;
 
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.TreeViewerColumn;
 import org.eclipse.swt.SWT;
@@ -20,6 +22,7 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.widgets.TreeItem;
 
 import pt.iscte.pidesco.extensibility.PidescoView;
 import pt.iscte.pidesco.snippets.model.Snippet;
@@ -35,7 +38,7 @@ public class SnippetsView implements PidescoView{
 	private SnippetsServices services;
 	
 	public SnippetsView() {
-		services = new SnippetsServicesImplementation(SnippetsActivator.getInstance().getFileReaderWriter());
+		services = new SnippetsServicesImplementation(SnippetsActivator.getInstance().getFileManager());
 	}
 
 	@Override
@@ -85,6 +88,30 @@ public class SnippetsView implements PidescoView{
 	    gridLayout.numColumns = 1;
 
 	    viewArea.setLayout(gridLayout);
+	    
+	    Button enter1 = new Button(viewArea, SWT.PUSH);
+	    enter1.setText("Delete Snippet");
+	    GridData gridData2 = new GridData(GridData.HORIZONTAL_ALIGN_END);
+	    gridData2.horizontalSpan = 3;
+	    enter1.setLayoutData(gridData2);
+	    enter1.addListener(SWT.Selection, new Listener() {
+	    	
+			@Override
+			public void handleEvent(Event event) {
+				IStructuredSelection s = (IStructuredSelection) tree.getSelection();
+				if(s.size() == 1 && (s.getFirstElement() instanceof Snippet)) {
+					Snippet snippetSelected = (Snippet)s.getFirstElement();
+					services.deleteSnippetByName(snippetSelected.getName());
+				}
+				
+				try {
+					refresh();
+				} catch (ClassNotFoundException | IOException e) {
+					e.printStackTrace();
+				}
+			}
+	    	
+	    });
 	    
 	    new Label(viewArea, SWT.NULL).setText("Name:");
 	    Text snippetName = new Text(viewArea, SWT.SINGLE | SWT.BORDER);

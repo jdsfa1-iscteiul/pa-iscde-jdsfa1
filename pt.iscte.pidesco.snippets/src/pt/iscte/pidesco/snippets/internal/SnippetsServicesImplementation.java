@@ -11,10 +11,10 @@ import pt.iscte.pidesco.snippets.service.SnippetsServices;
 
 public class SnippetsServicesImplementation implements SnippetsServices {
 	
-	private SnippetsFileReaderWriter writer;
+	private SnippetsFileManager snippetsFileManage;
 	
-	public SnippetsServicesImplementation(SnippetsFileReaderWriter writer){
-		this.writer = writer;
+	public SnippetsServicesImplementation(SnippetsFileManager manager){
+		this.snippetsFileManage = manager;
 	}
 	
 	@Override
@@ -31,11 +31,22 @@ public class SnippetsServicesImplementation implements SnippetsServices {
 		if(isSnippet(snippet.getName())) {
 			return ServiceOperationResult.Failure("A snippet with that name already exists");
 		}
-		if(writer != null) {
-			this.writer.writeSnippetInFile(snippet);
+		if(snippetsFileManage != null) {
+			this.snippetsFileManage.writeSnippetInFile(snippet);
 			return ServiceOperationResult.Success();
 		}
 		return ServiceOperationResult.Failure("Ups! Something went wrong");
+	}
+	
+	@Override
+	public ServiceOperationResult deleteSnippetByName(String snippetName){
+		boolean isSuccess = this.snippetsFileManage.deleteSnippetByName(snippetName);
+		if(isSuccess) {
+			return ServiceOperationResult.Success();
+		} else {
+			return ServiceOperationResult.Failure("We can't delete this file");
+		}
+		
 	}
 
 	@Override
