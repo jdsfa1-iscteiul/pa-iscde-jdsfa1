@@ -5,6 +5,7 @@ import java.util.ArrayList;
 
 import pt.iscte.pidesco.javaeditor.service.JavaEditorServices;
 import pt.iscte.pidesco.snippets.model.Snippet;
+import pt.iscte.pidesco.snippets.model.SnippetType;
 import pt.iscte.pidesco.snippets.service.ServiceOperationResult;
 import pt.iscte.pidesco.snippets.service.SnippetsListener;
 import pt.iscte.pidesco.snippets.service.SnippetsServices;
@@ -27,7 +28,8 @@ public class SnippetsServicesImplementation implements SnippetsServices {
 	}
 
 	@Override
-	public ServiceOperationResult saveNewSnippet(Snippet snippet) throws IOException, ClassNotFoundException {
+	public ServiceOperationResult saveNewSnippet(SnippetType snippetType, String snippetName, String snippetContent) throws IOException, ClassNotFoundException {
+		Snippet snippet = new Snippet(snippetType, snippetName, snippetContent);
 		if(isSnippet(snippet.getName())) {
 			return ServiceOperationResult.Failure("A snippet with that name already exists");
 		}
@@ -49,8 +51,7 @@ public class SnippetsServicesImplementation implements SnippetsServices {
 		
 	}
 
-	@Override
-	public ServiceOperationResult insertSnippetAtCursor(Snippet snippet) {
+	private ServiceOperationResult insertSnippetAtCursor(Snippet snippet) {
 		JavaEditorServices javaEditorServ = SnippetsActivator.getInstance().getJavaEditorServices();
 		if(javaEditorServ != null) {
 			javaEditorServ.insertTextAtCursor(snippet.getContent());
@@ -71,7 +72,7 @@ public class SnippetsServicesImplementation implements SnippetsServices {
 	private Snippet getSnippetByName(String snippetName) throws ClassNotFoundException, IOException {
 		ArrayList<Snippet> snippetsAvailable = SnippetsActivator.getInstance().getSnippets();
 		for(Snippet snippet: snippetsAvailable) {
-			if(snippet.getName() == snippetName) {
+			if(snippet.getName().equals(snippetName)) {
 				return snippet;
 			}
 		}

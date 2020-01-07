@@ -154,7 +154,7 @@ public class SnippetsView implements PidescoView{
 						break;
 				}
 				try {
-					services.saveNewSnippet(new Snippet(type, snippetName.getText(), snippetContent.getText()));
+					services.saveNewSnippet(type, snippetName.getText(), snippetContent.getText());
 				} catch (IOException | ClassNotFoundException e) {
 					e.printStackTrace();
 				}
@@ -184,7 +184,11 @@ public class SnippetsView implements PidescoView{
 				IStructuredSelection s = (IStructuredSelection) tree.getSelection();
 				if(s.size() == 1 && (s.getFirstElement() instanceof Snippet)) {
 					Snippet snippetSelected = (Snippet)s.getFirstElement();
-					services.insertSnippetAtCursor(snippetSelected);
+					try {
+						services.insertSnippetAtCursorByName(snippetSelected.getName());
+					} catch (ClassNotFoundException | IOException e) {
+						e.printStackTrace();
+					}
 				}
 			}
 		});

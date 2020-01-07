@@ -3,6 +3,7 @@ package pt.iscte.pidesco.snippets.service;
 import java.io.IOException;
 
 import pt.iscte.pidesco.snippets.model.Snippet;
+import pt.iscte.pidesco.snippets.model.SnippetType;
 
 public interface SnippetsServices {
 	/**
@@ -23,7 +24,7 @@ public interface SnippetsServices {
 	 * @throws ClassNotFoundException
 	 */
 	
-	ServiceOperationResult saveNewSnippet(Snippet snippet) throws IOException, ClassNotFoundException;
+	ServiceOperationResult saveNewSnippet(SnippetType snippetType, String snippetName, String content) throws IOException, ClassNotFoundException;
 	
 	/**
 	 * Deletes an existing snippet
@@ -34,13 +35,6 @@ public interface SnippetsServices {
 	 */
 	ServiceOperationResult deleteSnippetByName(String snippetName);
 	
-	/**
-	 * Inserts a snippet at the cursor location
-	 * @param snippet
-	 * @return
-	 */
-	
-	ServiceOperationResult insertSnippetAtCursor(Snippet snippet);
 	
 	/**
 	 * Inserts a snippet at the cursor location by name
