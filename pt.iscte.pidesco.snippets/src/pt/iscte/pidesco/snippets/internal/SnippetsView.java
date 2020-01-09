@@ -20,8 +20,10 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Text;
+import org.osgi.framework.ServiceReference;
 
 import pt.iscte.pidesco.extensibility.PidescoView;
+import pt.iscte.pidesco.javaeditor.service.JavaEditorServices;
 import pt.iscte.pidesco.snippets.model.Snippet;
 import pt.iscte.pidesco.snippets.model.SnippetGroup;
 import pt.iscte.pidesco.snippets.model.SnippetType;
@@ -33,10 +35,13 @@ public class SnippetsView implements PidescoView{
 	private TreeViewer tree;
 	private Image snippetGroupImage;
 	private Image snippetImage;
-	private SnippetsServices services;
+	private SnippetsServices snippetsService;
 	
 	public SnippetsView() {
-		services = new SnippetsServicesImplementation(SnippetsActivator.getInstance().getFileManager());
+		ServiceReference<SnippetsServices> ref = SnippetsActivator.getInstance().getServiceRef();
+		if(ref != null) {
+			snippetsService = SnippetsActivator.getContext().getService(ref);
+		}
 	}
 
 	@Override
@@ -100,7 +105,7 @@ public class SnippetsView implements PidescoView{
 				if(s.size() == 1 && (s.getFirstElement() instanceof Snippet)) {
 					Snippet snippetSelected = (Snippet)s.getFirstElement();
 					try {
-						services.insertSnippetAtCursorByName(snippetSelected.getName());
+						snippetsService.insertSnippetAtCursorByName(snippetSelected.getName());
 						for(SnippetsListener l : SnippetsActivator.getInstance().getListeners()) {
 							l.snippetUsed(snippetSelected);
 						}
@@ -125,7 +130,7 @@ public class SnippetsView implements PidescoView{
 				IStructuredSelection s = (IStructuredSelection) tree.getSelection();
 				if(s.size() == 1 && (s.getFirstElement() instanceof Snippet)) {
 					Snippet snippetSelected = (Snippet)s.getFirstElement();
-					services.deleteSnippetByName(snippetSelected.getName());
+					snippetsService.deleteSnippetByName(snippetSelected.getName());
 					for(SnippetsListener l : SnippetsActivator.getInstance().getListeners()) {
 						l.snippetDeleted(snippetSelected);
 					}
@@ -182,7 +187,7 @@ public class SnippetsView implements PidescoView{
 				}
 				if(snippetName.getText() != null && snippetContent.getText() != null && type != null) {
 					try {
-						services.saveNewSnippet(type, snippetName.getText(), snippetContent.getText());
+						snippetsService.saveNewSnippet(type, snippetName.getText(), snippetContent.getText());
 						for(SnippetsListener l : SnippetsActivator.getInstance().getListeners()) {
 							l.snippetSaved(new Snippet(type, snippetName.getText(), snippetContent.getText()));
 						}
@@ -217,7 +222,7 @@ public class SnippetsView implements PidescoView{
 				if(s.size() == 1 && (s.getFirstElement() instanceof Snippet)) {
 					Snippet snippetSelected = (Snippet)s.getFirstElement();
 					try {
-						services.insertSnippetAtCursorByName(snippetSelected.getName());
+						snippetsService.insertSnippetAtCursorByName(snippetSelected.getName());
 					} catch (ClassNotFoundException | IOException e) {
 						e.printStackTrace();
 					}

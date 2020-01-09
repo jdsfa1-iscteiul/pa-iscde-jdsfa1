@@ -8,12 +8,14 @@ import java.util.Set;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
+import org.osgi.framework.ServiceRegistration;
 
 import pt.iscte.pidesco.javaeditor.service.JavaEditorServices;
 import pt.iscte.pidesco.snippets.model.Snippet;
 import pt.iscte.pidesco.snippets.model.SnippetGroup;
 import pt.iscte.pidesco.snippets.model.SnippetType;
 import pt.iscte.pidesco.snippets.service.SnippetsListener;
+import pt.iscte.pidesco.snippets.service.SnippetsServices;
 
 public class SnippetsActivator implements BundleActivator {
 
@@ -24,6 +26,7 @@ public class SnippetsActivator implements BundleActivator {
 	private SnippetGroup root;
 	private JavaEditorServices javaEditorServices;
 	private Set<SnippetsListener> listeners;
+	private ServiceRegistration<SnippetsServices> service;
 
 	static BundleContext getContext() {
 		return context ;
@@ -32,9 +35,12 @@ public class SnippetsActivator implements BundleActivator {
 	public void start(BundleContext bundleContext) throws Exception {
 		instance = this; 
 		listeners = new HashSet<>();
+		
 		SnippetsActivator.context = bundleContext;
 		String path = "/Users/joaoduarte/Documents/ISCTE/PA/git/pt.iscte.pidesco.snippets/pt.iscte.pidesco.snippets/snippets";
 		this.snippetsFileManager = new SnippetsFileManager(path);
+		
+		service = context.registerService(SnippetsServices.class, new SnippetsServicesImplementation(this.snippetsFileManager), null);
 		
 		ServiceReference<JavaEditorServices> ref = bundleContext.getServiceReference(JavaEditorServices.class);
 		if(ref != null) {
@@ -46,6 +52,8 @@ public class SnippetsActivator implements BundleActivator {
 
 	public void stop(BundleContext bundleContext) throws Exception {
 		SnippetsActivator.context = null;
+		service.unregister();
+		listeners.clear();
 	}
 
 	private void readSnippetsFile() throws ClassNotFoundException, IOException {
@@ -119,6 +127,10 @@ public class SnippetsActivator implements BundleActivator {
 	
 	public Set<SnippetsListener> getListeners(){
 		return listeners;
+	}
+	
+	public ServiceReference<SnippetsServices> getServiceRef(){
+		return this.service.getReference();
 	}
 	
 }
