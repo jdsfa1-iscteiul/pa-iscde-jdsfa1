@@ -2,6 +2,7 @@ package pt.iscte.pidesco.snippets.internal;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Set;
 
 import org.osgi.framework.BundleActivator;
@@ -30,6 +31,7 @@ public class SnippetsActivator implements BundleActivator {
  
 	public void start(BundleContext bundleContext) throws Exception {
 		instance = this;
+		listeners = new HashSet<>();
 		SnippetsActivator.context = bundleContext;
 		String path = "/Users/joaoduarte/Documents/ISCTE/PA/git/pt.iscte.pidesco.snippets/pt.iscte.pidesco.snippets/snippets";
 		this.snippetsFileManager = new SnippetsFileManager(path);
@@ -113,6 +115,10 @@ public class SnippetsActivator implements BundleActivator {
 
 	public void removeListener(SnippetsListener l) {
 		listeners.remove(l);
+	}
+	
+	public Set<SnippetsListener> getListeners(){
+		return listeners;
 	}
 	
 }
