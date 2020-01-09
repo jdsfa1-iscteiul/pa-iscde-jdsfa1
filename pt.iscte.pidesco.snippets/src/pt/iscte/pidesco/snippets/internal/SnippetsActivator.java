@@ -30,7 +30,7 @@ public class SnippetsActivator implements BundleActivator {
 	} 
  
 	public void start(BundleContext bundleContext) throws Exception {
-		instance = this;
+		instance = this; 
 		listeners = new HashSet<>();
 		SnippetsActivator.context = bundleContext;
 		String path = "/Users/joaoduarte/Documents/ISCTE/PA/git/pt.iscte.pidesco.snippets/pt.iscte.pidesco.snippets/snippets";

@@ -20,7 +20,7 @@ public interface SnippetsListener {
 	
 	/**
 	 * Notifys whenever a new snippet is saved
-	 * @param snippet
+	 * @param snippet  
 	 */
 	
 	default void snippetSaved(Snippet snippet) { }

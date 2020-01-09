@@ -5,10 +5,8 @@ import java.util.Map;
 
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
-import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.LabelProvider;
-import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.TreeViewerColumn;
 import org.eclipse.swt.SWT;
@@ -22,12 +20,12 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.swt.widgets.TreeItem;
 
 import pt.iscte.pidesco.extensibility.PidescoView;
 import pt.iscte.pidesco.snippets.model.Snippet;
 import pt.iscte.pidesco.snippets.model.SnippetGroup;
 import pt.iscte.pidesco.snippets.model.SnippetType;
+import pt.iscte.pidesco.snippets.service.SnippetsListener;
 import pt.iscte.pidesco.snippets.service.SnippetsServices;
 
 public class SnippetsView implements PidescoView{
@@ -89,19 +87,48 @@ public class SnippetsView implements PidescoView{
 
 	    viewArea.setLayout(gridLayout);
 	    
-	    Button enter1 = new Button(viewArea, SWT.PUSH);
-	    enter1.setText("Delete Snippet");
-	    GridData gridData2 = new GridData(GridData.HORIZONTAL_ALIGN_END);
-	    gridData2.horizontalSpan = 3;
-	    enter1.setLayoutData(gridData2);
-	    enter1.addListener(SWT.Selection, new Listener() {
+	    Button insertButton = new Button(viewArea, SWT.PUSH);
+	    insertButton.setText("Use Snippet");
+	    GridData gridData3 = new GridData(GridData.HORIZONTAL_ALIGN_END);
+	    gridData3.horizontalSpan = 3;
+	    insertButton.setLayoutData(gridData3);
+	    insertButton.addListener(SWT.Selection, new Listener() {
 	    	
 			@Override
 			public void handleEvent(Event event) {
 				IStructuredSelection s = (IStructuredSelection) tree.getSelection();
 				if(s.size() == 1 && (s.getFirstElement() instanceof Snippet)) {
 					Snippet snippetSelected = (Snippet)s.getFirstElement();
+					try {
+						services.insertSnippetAtCursorByName(snippetSelected.getName());
+						for(SnippetsListener l : SnippetsActivator.getInstance().getListeners()) {
+							l.snippetUsed(snippetSelected);
+						}
+						refresh();
+					} catch (ClassNotFoundException | IOException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+	    	
+	    });
+	    
+	    Button deleteButton = new Button(viewArea, SWT.PUSH);
+	    deleteButton.setText("Delete Snippet");
+	    GridData gridData2 = new GridData(GridData.HORIZONTAL_ALIGN_END);
+	    gridData2.horizontalSpan = 3;
+	    deleteButton.setLayoutData(gridData2);
+	    deleteButton.addListener(SWT.Selection, new Listener() {
+	    	 
+			@Override
+			public void handleEvent(Event event) {
+				IStructuredSelection s = (IStructuredSelection) tree.getSelection();
+				if(s.size() == 1 && (s.getFirstElement() instanceof Snippet)) {
+					Snippet snippetSelected = (Snippet)s.getFirstElement();
 					services.deleteSnippetByName(snippetSelected.getName());
+					for(SnippetsListener l : SnippetsActivator.getInstance().getListeners()) {
+						l.snippetDeleted(snippetSelected);
+					}
 				}
 				
 				try {
@@ -153,10 +180,15 @@ public class SnippetsView implements PidescoView{
 						type = SnippetType.custom;
 						break;
 				}
-				try {
-					services.saveNewSnippet(type, snippetName.getText(), snippetContent.getText());
-				} catch (IOException | ClassNotFoundException e) {
-					e.printStackTrace();
+				if(snippetName.getText() != null && snippetContent.getText() != null && type != null) {
+					try {
+						services.saveNewSnippet(type, snippetName.getText(), snippetContent.getText());
+						for(SnippetsListener l : SnippetsActivator.getInstance().getListeners()) {
+							l.snippetSaved(new Snippet(type, snippetName.getText(), snippetContent.getText()));
+						}
+					} catch (IOException | ClassNotFoundException e) {
+						e.printStackTrace();
+					}
 				}
 				snippetName.setText("");
 				snippetContent.setText("");
@@ -188,6 +220,9 @@ public class SnippetsView implements PidescoView{
 						services.insertSnippetAtCursorByName(snippetSelected.getName());
 					} catch (ClassNotFoundException | IOException e) {
 						e.printStackTrace();
+					}
+					for(SnippetsListener l : SnippetsActivator.getInstance().getListeners()) {
+						l.snippetUsed(snippetSelected);
 					}
 				}
 			}
